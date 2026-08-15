@@ -285,6 +285,36 @@
     .pd3 { animation: pflow 2s linear infinite 1.33s; }
     @keyframes pflow { from { left: -7px; } to { left: calc(100% + 7px); } }
 
+    /* Load popup */
+    .load-tip { position: relative; cursor: default; }
+    .load-popup {
+      display: none; position: absolute;
+      bottom: calc(100% + 10px); right: -8px;
+      width: 210px; background: #fff;
+      border: 1px solid var(--lborder); border-radius: 10px;
+      padding: 12px 14px; z-index: 50;
+      box-shadow: 0 6px 20px rgba(0,0,0,.10);
+    }
+    .load-tip:hover .load-popup { display: block; }
+    .popup-ttl {
+      font-size: 9px; font-weight: 700; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
+    }
+    .comp-row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding: 3px 0; border-bottom: 1px solid var(--lborder);
+      font-size: 11.5px;
+    }
+    .comp-row:last-of-type { border-bottom: none; }
+    .comp-name { color: var(--ltext); }
+    .comp-w { font-weight: 600; font-variant-numeric: tabular-nums;
+               color: var(--lmuted); }
+    .popup-tot {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-top: 8px; padding-top: 8px; border-top: 2px solid var(--lborder);
+      font-size: 12px; font-weight: 700; color: var(--ltext);
+    }
+
     /* ── RIGHT ── */
     .right { width: 50%; flex-shrink: 0; overflow-y: auto; }
 
@@ -399,10 +429,18 @@
                 <div class="pipe-dot pd2" id="dl2"></div>
                 <div class="pipe-dot pd3" id="dl3"></div>
               </div>
-              <div class="sim-node">
+              <div class="sim-node load-tip">
                 <div class="sim-icon">⚡</div>
                 <div class="sim-val" id="load-val">—</div>
-                <div class="sim-key">Load</div>
+                <div class="sim-key">Load ↑</div>
+                <div class="load-popup">
+                  <div class="popup-ttl">Active Components</div>
+                  <div id="comp-rows"></div>
+                  <div class="popup-tot">
+                    <span>Total</span>
+                    <span id="popup-tot-val">—</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -424,6 +462,7 @@
             <span class="tag on">Power Budget</span>
             <span class="tag on">Camp Locations</span>
             <span class="tag on">Want List</span>
+            <span class="tag on">Starlink</span>
             <span class="tag">Video Production</span>
             <span class="tag">Resources</span>
           </div>
@@ -491,11 +530,19 @@
   </div>
   <script>
   (function () {
-    // Approximate Vancouver sunrise/sunset by month [rise, set] decimal 24h local time
     const SUN = [
       [8.0,16.3],[7.3,17.2],[6.3,18.1],[7.2,20.0],
       [5.8,20.8],[5.1,21.5],[5.4,21.2],[6.2,20.3],
       [7.0,19.0],[7.8,17.7],[7.4,16.5],[7.9,16.1]
+    ]
+
+    // Components — each has a min/max watt range and a running current value
+    const COMPS = [
+      { name: 'Home Brain',        min: 6,    max: 8,    cur: 7    },
+      { name: 'Starlink Mini',     min: 16,   max: 18,   cur: 17   },
+      { name: 'Alarm Monitor',     min: 2,    max: 3,    cur: 2.5  },
+      { name: 'Temp/Hum Monitor',  min: 0.85, max: 1,    cur: 0.9  },
+      { name: 'Fan',               min: 4,    max: 4,    cur: 4    },
     ]
 
     function vanNow() {
@@ -516,39 +563,48 @@
 
     const BAT_CAP = 3072
     let batWh = 2450
-    let loadW = 23
     let last = Date.now()
 
     function tick() {
       const now = Date.now()
-      const dt = (now - last) / 3600000  // hours elapsed
+      const dt = (now - last) / 3600000
       last = now
 
       const vt = vanNow()
       const solar = solarW(vt.hours, vt.month)
 
-      loadW += (Math.random() - 0.5) * 0.4
-      loadW = Math.max(22, Math.min(24, loadW))
+      // Drift each component slowly within its range
+      COMPS.forEach(c => {
+        c.cur += (Math.random() - 0.5) * 0.08
+        c.cur = Math.max(c.min, Math.min(c.max, c.cur))
+      })
+      const loadW = COMPS.reduce((s, c) => s + c.cur, 0)
 
       batWh += (solar - loadW) * dt
       batWh = Math.max(0, Math.min(BAT_CAP, batWh))
-      const pct = (batWh / BAT_CAP * 100)
+      const pct = batWh / BAT_CAP * 100
 
       const isDay = solar > 0
-      const dotSolar = isDay ? '#f59e0b' : 'transparent'
-      const trackSolar = isDay ? '#fef3c7' : 'var(--lborder)'
       const batColor = pct > 50 ? '#16a34a' : pct > 25 ? '#f59e0b' : '#ef4444'
 
-      document.getElementById('sim-time').textContent  = 'Vancouver · ' + vt.display
+      document.getElementById('sim-time').textContent   = 'Vancouver · ' + vt.display
       document.getElementById('solar-icon').textContent = isDay ? '☀️' : '🌙'
       document.getElementById('solar-val').textContent  = solar + 'w'
       document.getElementById('bat-val').textContent    = pct.toFixed(1) + '%'
-      document.getElementById('load-val').textContent   = Math.round(loadW) + 'w'
+      document.getElementById('load-val').textContent   = loadW.toFixed(1) + 'w'
       document.getElementById('bat-bar').style.cssText  = 'width:' + pct.toFixed(1) + '%;background:' + batColor
-      document.getElementById('track-s').style.background = trackSolar
+      document.getElementById('track-s').style.background = isDay ? '#fef3c7' : 'var(--lborder)'
       document.getElementById('track-l').style.background = '#fee2e2'
-      ;['ds1','ds2','ds3'].forEach(id => document.getElementById(id).style.background = dotSolar)
+      ;['ds1','ds2','ds3'].forEach(id => document.getElementById(id).style.background = isDay ? '#f59e0b' : 'transparent')
       ;['dl1','dl2','dl3'].forEach(id => document.getElementById(id).style.background = '#ef4444')
+
+      // Popup rows
+      const rows = document.getElementById('comp-rows')
+      rows.innerHTML = COMPS.map(c =>
+        '<div class="comp-row"><span class="comp-name">' + c.name + '</span>' +
+        '<span class="comp-w">' + c.cur.toFixed(2) + 'w</span></div>'
+      ).join('')
+      document.getElementById('popup-tot-val').textContent = loadW.toFixed(1) + 'w'
     }
 
     tick()
