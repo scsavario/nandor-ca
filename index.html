@@ -5,200 +5,210 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The Nandor Project</title>
   <style>
+    /* Left column is always dark — deliberate, not a mode toggle */
     :root {
-      --bg:       #f0e8d4;
-      --bg-card:  #e6dbc6;
-      --bg-inset: #d8cdb4;
-      --text:     #1a0c04;
-      --muted:    #7a5838;
-      --accent:   #c4501a;
-      --border:   #c4b090;
-      --photo-bg: #ddd0b8;
+      --lbg:      #0e0805;
+      --lcard:    #1c1208;
+      --linset:   #2a1c0e;
+      --lborder:  #382410;
+      --ltext:    #f0e8d4;
+      --lmuted:   #8a6848;
+      --accent:   #d05a20;
+      --adim:     #5a2c10;
+
+      --rbg:      #f0e8d4;
+      --rborder:  #cec0a4;
     }
     @media (prefers-color-scheme: dark) {
       :root:not([data-theme="light"]) {
-        --bg:       #120904;
-        --bg-card:  #1c1008;
-        --bg-inset: #281808;
-        --text:     #f0e8d4;
-        --muted:    #9a7850;
-        --accent:   #d05a22;
-        --border:   #382010;
-        --photo-bg: #180e06;
+        --rbg:     #0e0805;
+        --rborder: #2a1808;
       }
     }
     :root[data-theme="dark"] {
-      --bg:       #120904;
-      --bg-card:  #1c1008;
-      --bg-inset: #281808;
-      --text:     #f0e8d4;
-      --muted:    #9a7850;
-      --accent:   #d05a22;
-      --border:   #382010;
-      --photo-bg: #180e06;
+      --rbg:     #0e0805;
+      --rborder: #2a1808;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     html, body { height: 100%; }
-
     body {
-      background: var(--bg);
-      color: var(--text);
+      background: var(--rbg);
+      color: var(--ltext);
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
 
-    .split {
-      display: flex;
-      height: 100vh;
-    }
+    .split { display: flex; height: 100vh; }
 
     /* ── LEFT ── */
     .left {
       width: 50%;
       flex-shrink: 0;
       overflow-y: auto;
-      padding: 52px 44px 72px;
-      border-right: 1px solid var(--border);
+      background: var(--lbg);
+      padding: 48px 44px 80px;
+      border-right: 1px solid var(--lborder);
     }
+
+    /* Scrollbar — subtle */
+    .left::-webkit-scrollbar { width: 4px; }
+    .left::-webkit-scrollbar-track { background: transparent; }
+    .left::-webkit-scrollbar-thumb { background: var(--lborder); border-radius: 2px; }
+
+    /* ── TITLE ── */
+    .title-block { margin-bottom: 44px; }
 
     .eyebrow {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: .16em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 18px;
+      display: block;
+      font-size: 9.5px; font-weight: 700; letter-spacing: .18em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 22px;
     }
 
-    h1 {
+    .t-the {
+      display: block;
       font-family: Georgia, 'Times New Roman', serif;
-      font-size: clamp(30px, 3.6vw, 50px);
-      font-weight: 400;
-      line-height: 1.06;
-      letter-spacing: -.01em;
-      color: var(--text);
-      text-wrap: balance;
+      font-size: clamp(18px, 2vw, 24px); font-weight: 400;
+      color: var(--lmuted); letter-spacing: .04em;
+      margin-bottom: 2px;
     }
 
-    .rule {
-      width: 36px;
-      height: 3px;
-      background: var(--accent);
-      margin: 26px 0 38px;
+    .t-nandor {
+      display: block;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: clamp(54px, 6.4vw, 86px); font-weight: 400;
+      color: var(--ltext); letter-spacing: -.03em;
+      line-height: .92;
     }
 
-    .cards {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    .t-project {
+      display: block;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: clamp(20px, 2.4vw, 30px); font-weight: 400;
+      color: var(--lmuted); letter-spacing: .06em;
+      margin-top: 8px;
     }
+
+    .title-rule {
+      margin-top: 30px;
+      height: 1px;
+      background: linear-gradient(90deg, var(--accent) 0%, var(--adim) 60%, transparent 100%);
+    }
+
+    /* ── CARDS ── */
+    .cards { display: flex; flex-direction: column; gap: 10px; }
 
     .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 3px;
+      background: var(--lcard);
+      border: 1px solid var(--lborder);
+      border-radius: 12px;
       padding: 22px 24px;
     }
 
+    .card.featured {
+      border-left: 3px solid var(--accent);
+      padding-left: 22px;
+    }
+
     .card-label {
-      font-size: 9.5px;
-      font-weight: 700;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 8px;
+      font-size: 9px; font-weight: 700; letter-spacing: .16em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 7px;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .badge {
+      font-size: 8.5px; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; padding: 2px 8px;
+      border-radius: 100px; background: var(--adim);
+      color: var(--accent); border: 1px solid var(--adim);
     }
 
     .card-heading {
       font-family: Georgia, serif;
-      font-size: 15px;
-      font-weight: 400;
-      color: var(--text);
-      margin-bottom: 10px;
+      font-size: 15px; font-weight: 400; line-height: 1.3;
+      color: var(--ltext); margin-bottom: 10px;
     }
 
     .card-body {
-      font-size: 13px;
-      line-height: 1.68;
-      color: var(--muted);
+      font-size: 12.5px; line-height: 1.72; color: var(--lmuted);
     }
 
+    /* Stat row for Power card */
+    .stats {
+      display: flex;
+      margin-top: 18px; padding-top: 16px;
+      border-top: 1px solid var(--lborder);
+      gap: 0;
+    }
+
+    .stat {
+      flex: 1;
+      padding-right: 18px; margin-right: 18px;
+      border-right: 1px solid var(--lborder);
+    }
+    .stat:last-child { border-right: none; margin-right: 0; padding-right: 0; }
+
+    .stat-val {
+      font-size: 28px; font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--ltext); letter-spacing: -.02em; line-height: 1;
+    }
+
+    .stat-key {
+      font-size: 9px; font-weight: 600; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--lmuted); margin-top: 5px;
+    }
+
+    /* Specs grid */
     .specs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+      display: grid; grid-template-columns: 1fr 1fr;
       gap: 10px 24px;
-      margin-top: 16px;
-      padding-top: 14px;
-      border-top: 1px solid var(--border);
+      margin-top: 16px; padding-top: 14px;
+      border-top: 1px solid var(--lborder);
     }
 
     .spec-k {
-      font-size: 9.5px;
-      font-weight: 700;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 2px;
+      font-size: 9px; font-weight: 700; letter-spacing: .09em;
+      text-transform: uppercase; color: var(--lmuted); margin-bottom: 2px;
     }
 
     .spec-v {
-      font-size: 13px;
-      font-variant-numeric: tabular-nums;
-      color: var(--text);
+      font-size: 13px; font-variant-numeric: tabular-nums; color: var(--ltext);
     }
 
+    /* Tags / pills */
     .tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 14px;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
+      display: flex; flex-wrap: wrap; gap: 6px;
+      margin-top: 14px; padding-top: 12px;
+      border-top: 1px solid var(--lborder);
     }
 
     .tag {
-      font-size: 11px;
-      font-weight: 500;
-      padding: 4px 10px;
-      border-radius: 2px;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      background: var(--bg-inset);
+      font-size: 10.5px; font-weight: 500;
+      padding: 4px 12px; border-radius: 100px;
+      border: 1px solid var(--lborder);
+      color: var(--lmuted); background: var(--linset);
+      white-space: nowrap;
     }
 
     .tag.on {
-      background: var(--accent);
-      color: #fff;
+      background: var(--accent); color: #fff;
       border-color: var(--accent);
     }
 
     /* ── RIGHT ── */
-    .right {
-      width: 50%;
-      flex-shrink: 0;
-      overflow-y: auto;
-    }
+    .right { width: 50%; flex-shrink: 0; overflow-y: auto; }
 
-    .photos {
-      display: flex;
-      flex-direction: column;
-    }
+    .photos { display: flex; flex-direction: column; }
 
     .photo {
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      flex-shrink: 0;
-      overflow: hidden;
-      background: var(--photo-bg);
+      width: 100%; aspect-ratio: 16 / 9;
+      flex-shrink: 0; overflow: hidden;
+      background: var(--rbg);
     }
 
-    .photo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
+    .photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
     @media (max-width: 700px) {
       .split { flex-direction: column; height: auto; }
@@ -210,13 +220,18 @@
   <div class="split">
 
     <div class="left">
-      <div class="eyebrow">Est. 2026 · Vancouver Island, BC</div>
-      <h1>The Nandor<br>Project</h1>
-      <div class="rule"></div>
+
+      <div class="title-block">
+        <span class="eyebrow">Est. 2026 · Vancouver, BC</span>
+        <span class="t-the">The</span>
+        <span class="t-nandor">Nandor</span>
+        <span class="t-project">Project</span>
+        <div class="title-rule"></div>
+      </div>
 
       <div class="cards">
 
-        <div class="card">
+        <div class="card featured">
           <div class="card-label">The Vehicle</div>
           <div class="card-heading">Frontier Class C · GMC Vandura Chassis</div>
           <div class="card-body">A vintage North American Class C motorhome undergoing full-spectrum conversion — mechanical restoration paired with a purpose-built digital platform and a redesigned earthy interior.</div>
@@ -231,18 +246,26 @@
         <div class="card">
           <div class="card-label">Power System</div>
           <div class="card-heading">Off-Grid Energy Architecture</div>
-          <div class="card-body">Self-contained solar and battery system sized for extended off-grid operation, with real-time load monitoring and solar harvest planning built into the Nandor platform.</div>
-          <div class="specs">
-            <div><div class="spec-k">Primary Battery</div><div class="spec-v">Pecron E3600 LFP</div></div>
-            <div><div class="spec-k">Capacity</div><div class="spec-v">3,072 Wh</div></div>
-            <div><div class="spec-k">Solar Array</div><div class="spec-v">4× Rooftop + portable</div></div>
-            <div><div class="spec-k">System Voltage</div><div class="spec-v">48V LFP</div></div>
+          <div class="card-body">Self-contained solar and LFP battery system sized for extended off-grid stays, with real-time load monitoring and seasonal solar harvest planning.</div>
+          <div class="stats">
+            <div class="stat">
+              <div class="stat-val">3,072</div>
+              <div class="stat-key">Wh capacity</div>
+            </div>
+            <div class="stat">
+              <div class="stat-val">48V</div>
+              <div class="stat-key">LFP system</div>
+            </div>
+            <div class="stat">
+              <div class="stat-val">4+</div>
+              <div class="stat-key">Solar panels</div>
+            </div>
           </div>
         </div>
 
         <div class="card">
-          <div class="card-label">The Platform · app.nandor.ca</div>
-          <div class="card-heading">Custom Management App</div>
+          <div class="card-label">Platform</div>
+          <div class="card-heading">Custom Management Software</div>
           <div class="card-body">A purpose-built web application managing every dimension of life on the road — energy, budget, logistics, content production, and camp locations.</div>
           <div class="tags">
             <span class="tag on">Energy Planner</span>
@@ -255,21 +278,21 @@
         </div>
 
         <div class="card">
-          <div class="card-label">3D Walkthrough</div>
+          <div class="card-label">3D Walkthrough <span class="badge">In progress</span></div>
           <div class="card-heading">Unreal Engine 5 Digital Twin</div>
           <div class="card-body">A photorealistic model of the Frontier built from real measurements — exterior shell accurate to the original, interior redesigned with a new earthy palette.</div>
           <div class="specs">
             <div><div class="spec-k">Render Engine</div><div class="spec-v">Unreal Engine 5</div></div>
             <div><div class="spec-k">Modelling</div><div class="spec-v">Blender</div></div>
             <div><div class="spec-k">Scope</div><div class="spec-v">Shell + full interior</div></div>
-            <div><div class="spec-k">Status</div><div class="spec-v">In progress</div></div>
+            <div><div class="spec-k">Source</div><div class="spec-v">Real measurements</div></div>
           </div>
         </div>
 
         <div class="card">
           <div class="card-label">Destinations</div>
           <div class="card-heading">Canada & Mexico</div>
-          <div class="card-body">Vancouver Island south through BC, down the Pacific coast into Mexico — Baja, Sonora, Jalisco, and beyond. Long-term nomadic operations across two countries.</div>
+          <div class="card-body">Vancouver south through BC, down the Pacific coast into Mexico — Baja, Sonora, Jalisco, and beyond. Long-term nomadic operations across two countries.</div>
           <div class="tags">
             <span class="tag on">🇨🇦 BC Coastal</span>
             <span class="tag on">🇨🇦 Interior BC</span>
@@ -284,10 +307,10 @@
           <div class="card-label">Build Status · 2026</div>
           <div class="card-heading">Active</div>
           <div class="specs">
-            <div><div class="spec-k">Platform</div><div class="spec-v">app.nandor.ca</div></div>
+            <div><div class="spec-k">Home Base</div><div class="spec-v">Vancouver, BC</div></div>
             <div><div class="spec-k">Stack</div><div class="spec-v">React · Hono · CF Pages</div></div>
             <div><div class="spec-k">Database</div><div class="spec-v">Cloudflare D1 + R2</div></div>
-            <div><div class="spec-k">Next milestone</div><div class="spec-v">UE5 walkthrough v1</div></div>
+            <div><div class="spec-k">Next Milestone</div><div class="spec-v">UE5 walkthrough v1</div></div>
           </div>
         </div>
 
