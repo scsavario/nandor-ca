@@ -5,29 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The Nandor Project</title>
   <style>
-    /* Left column is always dark — deliberate, not a mode toggle */
     :root {
-      --lbg:      #0e0805;
-      --lcard:    #1c1208;
-      --linset:   #2a1c0e;
-      --lborder:  #382410;
-      --ltext:    #f0e8d4;
-      --lmuted:   #8a6848;
-      --accent:   #d05a20;
-      --adim:     #5a2c10;
+      --lbg:      #ffffff;
+      --lcard:    #ffffff;
+      --linset:   #f4f2ee;
+      --lborder:  #e4ddd4;
+      --ltext:    #160c04;
+      --lmuted:   #907060;
+      --accent:   #c44e18;
+      --adim:     #fce8dc;
 
-      --rbg:      #f0e8d4;
-      --rborder:  #cec0a4;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root:not([data-theme="light"]) {
-        --rbg:     #0e0805;
-        --rborder: #2a1808;
-      }
-    }
-    :root[data-theme="dark"] {
-      --rbg:     #0e0805;
-      --rborder: #2a1808;
+      --rbg:      #f0ebe2;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -46,7 +34,7 @@
       flex-shrink: 0;
       overflow-y: auto;
       background: var(--lbg);
-      padding: 48px 44px 80px;
+      padding: 56px 52px 96px;
       border-right: 1px solid var(--lborder);
     }
 
@@ -56,7 +44,7 @@
     .left::-webkit-scrollbar-thumb { background: var(--lborder); border-radius: 2px; }
 
     /* ── TITLE ── */
-    .title-block { margin-bottom: 44px; }
+    .title-block { margin-bottom: 52px; }
 
     .eyebrow {
       display: block;
@@ -96,7 +84,7 @@
     }
 
     /* ── CARDS ── */
-    .cards { display: flex; flex-direction: column; gap: 10px; }
+    .cards { display: flex; flex-direction: column; gap: 14px; }
 
     .card {
       background: var(--lcard);
@@ -121,7 +109,7 @@
       font-size: 8.5px; font-weight: 700; letter-spacing: .1em;
       text-transform: uppercase; padding: 2px 8px;
       border-radius: 100px; background: var(--adim);
-      color: var(--accent); border: 1px solid var(--adim);
+      color: var(--accent); border: 1px solid #f0cdb8;
     }
 
     .card-heading {
@@ -193,7 +181,6 @@
     .map-wrap iframe {
       width: 100%; height: 200px; border: 0;
       border-radius: 8px; display: block;
-      filter: invert(90%) hue-rotate(180deg);
     }
 
     /* Alarm */
