@@ -3,9 +3,308 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nandor</title>
+  <title>The Nandor Project</title>
+  <style>
+    :root {
+      --bg:       #f0e8d4;
+      --bg-card:  #e6dbc6;
+      --bg-inset: #d8cdb4;
+      --text:     #1a0c04;
+      --muted:    #7a5838;
+      --accent:   #c4501a;
+      --border:   #c4b090;
+      --photo-bg: #ddd0b8;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg:       #120904;
+        --bg-card:  #1c1008;
+        --bg-inset: #281808;
+        --text:     #f0e8d4;
+        --muted:    #9a7850;
+        --accent:   #d05a22;
+        --border:   #382010;
+        --photo-bg: #180e06;
+      }
+    }
+    :root[data-theme="dark"] {
+      --bg:       #120904;
+      --bg-card:  #1c1008;
+      --bg-inset: #281808;
+      --text:     #f0e8d4;
+      --muted:    #9a7850;
+      --accent:   #d05a22;
+      --border:   #382010;
+      --photo-bg: #180e06;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { height: 100%; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    .split {
+      display: flex;
+      height: 100vh;
+    }
+
+    /* ── LEFT ── */
+    .left {
+      width: 50%;
+      flex-shrink: 0;
+      overflow-y: auto;
+      padding: 52px 44px 72px;
+      border-right: 1px solid var(--border);
+    }
+
+    .eyebrow {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: clamp(30px, 3.6vw, 50px);
+      font-weight: 400;
+      line-height: 1.06;
+      letter-spacing: -.01em;
+      color: var(--text);
+      text-wrap: balance;
+    }
+
+    .rule {
+      width: 36px;
+      height: 3px;
+      background: var(--accent);
+      margin: 26px 0 38px;
+    }
+
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 22px 24px;
+    }
+
+    .card-label {
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .card-heading {
+      font-family: Georgia, serif;
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .card-body {
+      font-size: 13px;
+      line-height: 1.68;
+      color: var(--muted);
+    }
+
+    .specs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 24px;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    .spec-k {
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+
+    .spec-v {
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+      color: var(--text);
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .tag {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 2px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: var(--bg-inset);
+    }
+
+    .tag.on {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    /* ── RIGHT ── */
+    .right {
+      width: 50%;
+      flex-shrink: 0;
+      overflow-y: auto;
+    }
+
+    .photos {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .photo {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      flex-shrink: 0;
+      overflow: hidden;
+      background: var(--photo-bg);
+    }
+
+    .photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    @media (max-width: 700px) {
+      .split { flex-direction: column; height: auto; }
+      .left, .right { width: 100%; overflow-y: visible; }
+    }
+  </style>
 </head>
 <body>
-  <h1>Hello World</h1>
+  <div class="split">
+
+    <div class="left">
+      <div class="eyebrow">Est. 2026 · Vancouver Island, BC</div>
+      <h1>The Nandor<br>Project</h1>
+      <div class="rule"></div>
+
+      <div class="cards">
+
+        <div class="card">
+          <div class="card-label">The Vehicle</div>
+          <div class="card-heading">Frontier Class C · GMC Vandura Chassis</div>
+          <div class="card-body">A vintage North American Class C motorhome undergoing full-spectrum conversion — mechanical restoration paired with a purpose-built digital platform and a redesigned earthy interior.</div>
+          <div class="specs">
+            <div><div class="spec-k">Chassis</div><div class="spec-v">GMC P30 / Vandura</div></div>
+            <div><div class="spec-k">Era</div><div class="spec-v">Late 1970s – Early 80s</div></div>
+            <div><div class="spec-k">Body</div><div class="spec-v">Frontier Class C</div></div>
+            <div><div class="spec-k">Layout</div><div class="spec-v">Over-cab + dinette</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Power System</div>
+          <div class="card-heading">Off-Grid Energy Architecture</div>
+          <div class="card-body">Self-contained solar and battery system sized for extended off-grid operation, with real-time load monitoring and solar harvest planning built into the Nandor platform.</div>
+          <div class="specs">
+            <div><div class="spec-k">Primary Battery</div><div class="spec-v">Pecron E3600 LFP</div></div>
+            <div><div class="spec-k">Capacity</div><div class="spec-v">3,072 Wh</div></div>
+            <div><div class="spec-k">Solar Array</div><div class="spec-v">4× Rooftop + portable</div></div>
+            <div><div class="spec-k">System Voltage</div><div class="spec-v">48V LFP</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-label">The Platform · app.nandor.ca</div>
+          <div class="card-heading">Custom Management App</div>
+          <div class="card-body">A purpose-built web application managing every dimension of life on the road — energy, budget, logistics, content production, and camp locations.</div>
+          <div class="tags">
+            <span class="tag on">Energy Planner</span>
+            <span class="tag on">Power Budget</span>
+            <span class="tag on">Camp Locations</span>
+            <span class="tag on">Want List</span>
+            <span class="tag">Video Production</span>
+            <span class="tag">Resources</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-label">3D Walkthrough</div>
+          <div class="card-heading">Unreal Engine 5 Digital Twin</div>
+          <div class="card-body">A photorealistic model of the Frontier built from real measurements — exterior shell accurate to the original, interior redesigned with a new earthy palette.</div>
+          <div class="specs">
+            <div><div class="spec-k">Render Engine</div><div class="spec-v">Unreal Engine 5</div></div>
+            <div><div class="spec-k">Modelling</div><div class="spec-v">Blender</div></div>
+            <div><div class="spec-k">Scope</div><div class="spec-v">Shell + full interior</div></div>
+            <div><div class="spec-k">Status</div><div class="spec-v">In progress</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Destinations</div>
+          <div class="card-heading">Canada & Mexico</div>
+          <div class="card-body">Vancouver Island south through BC, down the Pacific coast into Mexico — Baja, Sonora, Jalisco, and beyond. Long-term nomadic operations across two countries.</div>
+          <div class="tags">
+            <span class="tag on">🇨🇦 BC Coastal</span>
+            <span class="tag on">🇨🇦 Interior BC</span>
+            <span class="tag">🇲🇽 Baja Norte</span>
+            <span class="tag">🇲🇽 Baja Sur</span>
+            <span class="tag">🇲🇽 Sonora</span>
+            <span class="tag">🇲🇽 Jalisco</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Build Status · 2026</div>
+          <div class="card-heading">Active</div>
+          <div class="specs">
+            <div><div class="spec-k">Platform</div><div class="spec-v">app.nandor.ca</div></div>
+            <div><div class="spec-k">Stack</div><div class="spec-v">React · Hono · CF Pages</div></div>
+            <div><div class="spec-k">Database</div><div class="spec-v">Cloudflare D1 + R2</div></div>
+            <div><div class="spec-k">Next milestone</div><div class="spec-v">UE5 walkthrough v1</div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="photos">
+        <div class="photo"><img src="img/01.jpg" alt="Frontier — 3/4 front" /></div>
+        <div class="photo"><img src="img/02.jpg" alt="Frontier — 3/4 rear" /></div>
+        <div class="photo"><img src="img/03.jpg" alt="Frontier — rear" /></div>
+        <div class="photo"><img src="img/04.jpg" alt="Frontier — front" /></div>
+        <div class="photo"><img src="img/05.jpg" alt="Frontier — side profile" /></div>
+        <div class="photo"><img src="img/06.jpg" alt="Frontier — 3/4 front" /></div>
+      </div>
+    </div>
+
+  </div>
 </body>
 </html>
