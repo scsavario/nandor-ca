@@ -233,6 +233,58 @@
       border-color: var(--accent);
     }
 
+    /* ── Energy sim ── */
+    .energy-sim {
+      margin-top: 16px; padding-top: 14px;
+      border-top: 1px solid var(--lborder);
+    }
+    .sim-header {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: 14px;
+    }
+    .sim-header-label {
+      font-size: 9px; font-weight: 700; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--lmuted);
+    }
+    .sim-time-display {
+      font-size: 9px; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--accent);
+    }
+    .sim-diagram { display: flex; align-items: center; }
+    .sim-node { flex-shrink: 0; text-align: center; width: 66px; }
+    .sim-icon { font-size: 20px; line-height: 1; }
+    .sim-val {
+      font-size: 15px; font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--ltext); margin: 4px 0 2px;
+    }
+    .sim-key {
+      font-size: 8.5px; font-weight: 600; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--lmuted);
+    }
+    .bat-bar-wrap {
+      height: 3px; background: var(--lborder); border-radius: 2px;
+      margin: 4px auto 0; width: 44px; overflow: hidden;
+    }
+    .bat-bar { height: 100%; border-radius: 2px; transition: width 3s linear, background .5s; }
+    .sim-pipe {
+      flex: 1; height: 2px; position: relative;
+      margin: 0 6px; overflow: visible;
+    }
+    .pipe-track {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px; border-radius: 1px; transition: background .5s;
+    }
+    .pipe-dot {
+      position: absolute; width: 7px; height: 7px;
+      border-radius: 50%; top: -2.5px;
+      transition: background .5s;
+    }
+    .pd1 { animation: pflow 2s linear infinite; }
+    .pd2 { animation: pflow 2s linear infinite .67s; }
+    .pd3 { animation: pflow 2s linear infinite 1.33s; }
+    @keyframes pflow { from { left: -7px; } to { left: calc(100% + 7px); } }
+
     /* ── RIGHT ── */
     .right { width: 50%; flex-shrink: 0; overflow-y: auto; }
 
@@ -317,6 +369,44 @@
             <div><div class="spec-k">Mounted Solar</div><div class="spec-v">800w rooftop</div></div>
             <div><div class="spec-k">Portable Solar</div><div class="spec-v">400w portable</div></div>
           </div>
+
+          <div class="energy-sim">
+            <div class="sim-header">
+              <span class="sim-header-label">Live Energy Flow</span>
+              <span class="sim-time-display" id="sim-time">—</span>
+            </div>
+            <div class="sim-diagram">
+              <div class="sim-node">
+                <div class="sim-icon" id="solar-icon">☀️</div>
+                <div class="sim-val" id="solar-val">—</div>
+                <div class="sim-key">Solar In</div>
+              </div>
+              <div class="sim-pipe">
+                <div class="pipe-track" id="track-s"></div>
+                <div class="pipe-dot pd1" id="ds1"></div>
+                <div class="pipe-dot pd2" id="ds2"></div>
+                <div class="pipe-dot pd3" id="ds3"></div>
+              </div>
+              <div class="sim-node">
+                <div class="sim-icon">🔋</div>
+                <div class="sim-val" id="bat-val">—</div>
+                <div class="sim-key">Battery</div>
+                <div class="bat-bar-wrap"><div class="bat-bar" id="bat-bar"></div></div>
+              </div>
+              <div class="sim-pipe">
+                <div class="pipe-track" id="track-l"></div>
+                <div class="pipe-dot pd1" id="dl1"></div>
+                <div class="pipe-dot pd2" id="dl2"></div>
+                <div class="pipe-dot pd3" id="dl3"></div>
+              </div>
+              <div class="sim-node">
+                <div class="sim-icon">⚡</div>
+                <div class="sim-val" id="load-val">—</div>
+                <div class="sim-key">Load</div>
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <div class="card">
@@ -399,5 +489,71 @@
     </div>
 
   </div>
+  <script>
+  (function () {
+    // Approximate Vancouver sunrise/sunset by month [rise, set] decimal 24h local time
+    const SUN = [
+      [8.0,16.3],[7.3,17.2],[6.3,18.1],[7.2,20.0],
+      [5.8,20.8],[5.1,21.5],[5.4,21.2],[6.2,20.3],
+      [7.0,19.0],[7.8,17.7],[7.4,16.5],[7.9,16.1]
+    ]
+
+    function vanNow() {
+      const s = new Date().toLocaleString('en-US', { timeZone: 'America/Vancouver' })
+      const d = new Date(s)
+      return {
+        hours: d.getHours() + d.getMinutes() / 60,
+        month: d.getMonth(),
+        display: d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
+      }
+    }
+
+    function solarW(hours, month) {
+      const [rise, set] = SUN[month]
+      if (hours <= rise || hours >= set) return 0
+      return Math.round(Math.sin(Math.PI * (hours - rise) / (set - rise)) * 800)
+    }
+
+    const BAT_CAP = 3072
+    let batWh = 2450
+    let loadW = 23
+    let last = Date.now()
+
+    function tick() {
+      const now = Date.now()
+      const dt = (now - last) / 3600000  // hours elapsed
+      last = now
+
+      const vt = vanNow()
+      const solar = solarW(vt.hours, vt.month)
+
+      loadW += (Math.random() - 0.5) * 0.4
+      loadW = Math.max(22, Math.min(24, loadW))
+
+      batWh += (solar - loadW) * dt
+      batWh = Math.max(0, Math.min(BAT_CAP, batWh))
+      const pct = (batWh / BAT_CAP * 100)
+
+      const isDay = solar > 0
+      const dotSolar = isDay ? '#f59e0b' : 'transparent'
+      const trackSolar = isDay ? '#fef3c7' : 'var(--lborder)'
+      const batColor = pct > 50 ? '#16a34a' : pct > 25 ? '#f59e0b' : '#ef4444'
+
+      document.getElementById('sim-time').textContent  = 'Vancouver · ' + vt.display
+      document.getElementById('solar-icon').textContent = isDay ? '☀️' : '🌙'
+      document.getElementById('solar-val').textContent  = solar + 'w'
+      document.getElementById('bat-val').textContent    = pct.toFixed(1) + '%'
+      document.getElementById('load-val').textContent   = Math.round(loadW) + 'w'
+      document.getElementById('bat-bar').style.cssText  = 'width:' + pct.toFixed(1) + '%;background:' + batColor
+      document.getElementById('track-s').style.background = trackSolar
+      document.getElementById('track-l').style.background = '#fee2e2'
+      ;['ds1','ds2','ds3'].forEach(id => document.getElementById(id).style.background = dotSolar)
+      ;['dl1','dl2','dl3'].forEach(id => document.getElementById(id).style.background = '#ef4444')
+    }
+
+    tick()
+    setInterval(tick, 1000)
+  })()
+  </script>
 </body>
 </html>
