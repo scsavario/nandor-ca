@@ -237,7 +237,20 @@
     .energy-sim {
       margin-top: 16px; padding-top: 14px;
       border-top: 1px solid var(--lborder);
+      border-radius: 8px;
+      transition: background .9s, padding .6s, border-color .9s;
     }
+    .energy-sim.night-mode {
+      background: #0e0805;
+      padding: 12px 14px;
+      margin: 14px -24px -22px;
+      border-top: none;
+      border-radius: 0 0 12px 12px;
+    }
+    .energy-sim.night-mode .sim-header-label { color: #b05828; }
+    .energy-sim.night-mode .sim-time-display { color: #b05828; }
+    .energy-sim.night-mode .sim-key  { color: #6a4828; }
+    .energy-sim.night-mode .sim-val  { color: #f0e8d4; }
     .sim-header {
       display: flex; justify-content: space-between; align-items: baseline;
       margin-bottom: 14px;
@@ -394,15 +407,15 @@
             </div>
           </div>
           <div class="specs">
-            <div><div class="spec-k">Primary Battery</div><div class="spec-v">Pecron E3600LFP</div></div>
-            <div><div class="spec-k">Secondary Battery</div><div class="spec-v">Wattcycle</div></div>
+            <div><div class="spec-k">Primary Battery</div><div class="spec-v">Pecron E3600LFP · 3,072Wh</div></div>
+            <div><div class="spec-k">Secondary Battery</div><div class="spec-v">Wattcycle · TBD Wh</div></div>
             <div><div class="spec-k">Mounted Solar</div><div class="spec-v">800w rooftop</div></div>
             <div><div class="spec-k">Portable Solar</div><div class="spec-v">400w portable</div></div>
           </div>
 
-          <div class="energy-sim">
+          <div class="energy-sim" id="esim">
             <div class="sim-header">
-              <span class="sim-header-label">Live Energy Flow</span>
+              <span class="sim-header-label" id="sim-mode">☀️ Day Mode</span>
               <span class="sim-time-display" id="sim-time">—</span>
             </div>
             <div class="sim-diagram">
@@ -587,6 +600,10 @@
       const isDay = solar > 0
       const batColor = pct > 50 ? '#16a34a' : pct > 25 ? '#f59e0b' : '#ef4444'
 
+      const esim = document.getElementById('esim')
+      if (isDay) esim.classList.remove('night-mode')
+      else        esim.classList.add('night-mode')
+      document.getElementById('sim-mode').textContent   = isDay ? '☀️ Day Mode' : '🌙 Evening Mode'
       document.getElementById('sim-time').textContent   = 'Vancouver · ' + vt.display
       document.getElementById('solar-icon').textContent = isDay ? '☀️' : '🌙'
       document.getElementById('solar-val').textContent  = solar + 'w'
