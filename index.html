@@ -177,6 +177,54 @@
       font-size: 13px; font-variant-numeric: tabular-nums; color: var(--ltext);
     }
 
+    /* Synopsis line */
+    .synopsis {
+      font-size: 13.5px; font-weight: 500; color: var(--ltext);
+      line-height: 1.45; margin-bottom: 10px;
+      padding-bottom: 12px; border-bottom: 1px solid var(--lborder);
+    }
+
+    /* Map */
+    .map-wrap {
+      margin-top: 16px; padding-top: 14px;
+      border-top: 1px solid var(--lborder);
+    }
+
+    .map-wrap iframe {
+      width: 100%; height: 200px; border: 0;
+      border-radius: 8px; display: block;
+      filter: invert(90%) hue-rotate(180deg);
+    }
+
+    /* Alarm */
+    .alarm-row {
+      display: flex; align-items: center; gap: 12px;
+      margin-top: 14px; padding-top: 12px;
+      border-top: 1px solid var(--lborder);
+    }
+
+    .alarm-label {
+      font-size: 9px; font-weight: 700; letter-spacing: .16em;
+      text-transform: uppercase; color: var(--lmuted); flex-shrink: 0;
+    }
+
+    .alarm-status {
+      font-size: 13px; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: #ef4444;
+    }
+
+    .alarm-dot {
+      width: 9px; height: 9px; border-radius: 50%;
+      background: #ef4444; flex-shrink: 0;
+      box-shadow: 0 0 6px 2px rgba(239,68,68,.5);
+      animation: blink 1.1s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: .1; }
+    }
+
     /* Tags / pills */
     .tags {
       display: flex; flex-wrap: wrap; gap: 6px;
@@ -234,6 +282,7 @@
         <div class="card featured">
           <div class="card-label">The Vehicle</div>
           <div class="card-heading">Frontier Class C · GMC Vandura Chassis</div>
+          <div class="synopsis">Complete renovation and smart/offgrid upgrade of a vintage motorhome.</div>
           <div class="card-body">A vintage North American Class C motorhome undergoing full-spectrum conversion — mechanical restoration paired with a purpose-built digital platform and a redesigned earthy interior.</div>
           <div class="specs">
             <div><div class="spec-k">Chassis</div><div class="spec-v">GMC P30 / Vandura</div></div>
@@ -311,6 +360,23 @@
             <div><div class="spec-k">Stack</div><div class="spec-v">React · Hono · CF Pages</div></div>
             <div><div class="spec-k">Database</div><div class="spec-v">Cloudflare D1 + R2</div></div>
             <div><div class="spec-k">Next Milestone</div><div class="spec-v">UE5 walkthrough v1</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Current Location</div>
+          <div class="card-heading">Greater Vancouver, BC</div>
+          <div class="map-wrap">
+            <iframe
+              src="https://maps.google.com/maps?q=49.113770,-122.196060&z=14&output=embed"
+              allowfullscreen="" loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+          </div>
+          <div class="alarm-row">
+            <span class="alarm-label">Alarm Status</span>
+            <span class="alarm-status">ARMED</span>
+            <span class="alarm-dot"></span>
           </div>
         </div>
 
