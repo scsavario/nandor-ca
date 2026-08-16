@@ -352,6 +352,15 @@
     }
     .env-leg-item { display: flex; align-items: center; gap: 5px; }
     .env-leg-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .env-fan {
+      display: flex; align-items: center; gap: 8px;
+      margin-top: 12px; padding: 8px 14px;
+      background: #fef2f2; border: 1px solid #fca5a5;
+      border-radius: 8px;
+    }
+    .env-fan-icon { font-size: 18px; animation: spin 1s linear infinite; }
+    .env-fan-label { font-size: 12px; font-weight: 700; color: #ef4444; letter-spacing: .06em; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
     /* ── RIGHT ── */
     .right { width: 50%; flex-shrink: 0; overflow-y: auto; }
@@ -507,6 +516,10 @@
             <span class="env-warn-label">Humidity Warning</span>
             <span class="env-warn-badge" id="env-warn-badge">ON</span>
             <span class="env-warn-thresh">threshold ≥ 65%</span>
+          </div>
+          <div class="env-fan" id="env-fan" style="display:none">
+            <span class="env-fan-icon" id="env-fan-icon">🌀</span>
+            <span class="env-fan-label">FAN ON</span>
           </div>
           <div class="env-graph-wrap">
             <canvas id="env-canvas" width="480" height="110"></canvas>
@@ -812,6 +825,8 @@
         badgeEl.textContent = 'ON'
         badgeEl.className   = 'env-warn-badge' + (isHumid ? ' alert' : '')
       }
+      const fanEl = document.getElementById('env-fan')
+      if (fanEl) fanEl.style.display = isHumid ? 'flex' : 'none'
       const tEl = document.getElementById('env-temp-val')
       const hEl = document.getElementById('env-hum-val')
       if (tEl) tEl.textContent = newT.toFixed(1)
