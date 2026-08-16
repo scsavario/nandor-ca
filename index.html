@@ -728,10 +728,10 @@
     const nowH = vanHours()
     for (let i = HISTORY - 1; i >= 0; i--) {
       const pastH = nowH - i / 3600
-      tNoise += (Math.random() - 0.5) * 0.12
-      tNoise  = Math.max(-1.2, Math.min(1.2, tNoise))
-      hNoise += (Math.random() - 0.5) * 0.25
-      hNoise  = Math.max(-3, Math.min(3, hNoise))
+      tNoise += (Math.random() - 0.5) * 0.008
+      tNoise  = Math.max(-0.4, Math.min(0.4, tNoise))
+      hNoise += (Math.random() - 0.5) * 0.015
+      hNoise  = Math.max(-0.8, Math.min(0.8, hNoise))
       tempBuf.push(parseFloat((baseTemp(pastH) + tNoise).toFixed(1)))
       humBuf.push(parseFloat((baseHum(pastH)  + hNoise).toFixed(1)))
     }
@@ -808,8 +808,8 @@
       const lastT = tempBuf[tempBuf.length - 1]
       const lastH = humBuf[humBuf.length - 1]
 
-      const newT = parseFloat((lastT + (baseTemp(h) - lastT) * 0.012 + (Math.random() - 0.5) * 0.14).toFixed(1))
-      const newH = parseFloat((lastH + (baseHum(h)  - lastH) * 0.012 + (Math.random() - 0.5) * 0.28).toFixed(1))
+      const newT = parseFloat((lastT + (baseTemp(h) - lastT) * 0.0008 + (Math.random() - 0.5) * 0.01).toFixed(1))
+      const newH = parseFloat((lastH + (baseHum(h)  - lastH) * 0.0008 + (Math.random() - 0.5) * 0.02).toFixed(1))
 
       tempBuf.push(newT); if (tempBuf.length > HISTORY) tempBuf.shift()
       humBuf.push(newH);  if (humBuf.length  > HISTORY) humBuf.shift()
