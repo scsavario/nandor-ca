@@ -1,0 +1,7 @@
+# https://nandor.ca/robots.txt
+# Canonical public site. app.nandor.ca and all preview hosts are noindex.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://nandor.ca/sitemap.xml
