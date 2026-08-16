@@ -328,6 +328,31 @@
       font-size: 12px; font-weight: 700; color: var(--ltext);
     }
 
+    /* ── Environmental Controls ── */
+    .env-warn-row {
+      display: flex; align-items: center; gap: 8px;
+      margin: 12px 0 0; font-size: 11px;
+    }
+    .env-warn-label { color: var(--lmuted); }
+    .env-warn-badge {
+      background: #16a34a; color: #fff;
+      font-size: 10px; font-weight: 700;
+      padding: 2px 8px; border-radius: 20px; letter-spacing: .06em;
+    }
+    .env-warn-badge.alert { background: #ef4444; }
+    .env-warn-thresh { color: var(--lmuted); }
+    .env-graph-wrap {
+      margin-top: 14px; background: var(--linset);
+      border-radius: 8px; padding: 10px 12px 8px;
+    }
+    #env-canvas { width: 100%; height: auto; display: block; }
+    .env-legend {
+      display: flex; align-items: center; gap: 14px;
+      margin-top: 7px; font-size: 10px; color: var(--lmuted);
+    }
+    .env-leg-item { display: flex; align-items: center; gap: 5px; }
+    .env-leg-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
     /* ── RIGHT ── */
     .right { width: 50%; flex-shrink: 0; overflow-y: auto; }
 
@@ -458,6 +483,39 @@
             </div>
           </div>
 
+        </div>
+
+        <div class="card">
+          <div class="card-label">Environmental Controls</div>
+          <div class="card-heading">Climate Monitoring</div>
+          <div class="card-body">Real-time interior temperature and humidity tracking. Automated humidity alerts flag conditions outside the comfortable range for both occupants and equipment.</div>
+          <div class="stats">
+            <div class="stat">
+              <div class="stat-val" id="env-temp-val">—</div>
+              <div class="stat-key">°C temp</div>
+            </div>
+            <div class="stat">
+              <div class="stat-val" id="env-hum-val">—</div>
+              <div class="stat-key">% humidity</div>
+            </div>
+            <div class="stat">
+              <div class="stat-val" id="env-status-val" style="color:#16a34a">DRY</div>
+              <div class="stat-key">condition</div>
+            </div>
+          </div>
+          <div class="env-warn-row">
+            <span class="env-warn-label">Humidity Warning</span>
+            <span class="env-warn-badge" id="env-warn-badge">ON</span>
+            <span class="env-warn-thresh">threshold ≥ 65%</span>
+          </div>
+          <div class="env-graph-wrap">
+            <canvas id="env-canvas" width="480" height="110"></canvas>
+            <div class="env-legend">
+              <div class="env-leg-item"><span class="env-leg-dot" style="background:#f97316"></span><span>Temp (°C)</span></div>
+              <div class="env-leg-item"><span class="env-leg-dot" style="background:#3b82f6"></span><span>Humidity (%)</span></div>
+              <div class="env-leg-item"><span class="env-leg-dot" style="background:#ef4444;border-radius:0;height:2px;width:12px"></span><span>Warn 65%</span></div>
+            </div>
+          </div>
         </div>
 
         <div class="card">
@@ -626,6 +684,144 @@
 
     tick()
     setInterval(tick, 1000)
+  })()
+
+  /* ── Environmental Controls simulation ── */
+  ;(function () {
+    const HUM_WARN = 65
+    const HISTORY  = 120
+
+    const tempBuf = []
+    const humBuf  = []
+
+    function vanHours() {
+      const s = new Date().toLocaleString('en-US', { timeZone: 'America/Vancouver' })
+      const d = new Date(s)
+      return d.getHours() + d.getMinutes() / 60 + d.getSeconds() / 3600
+    }
+
+    function baseTemp(h) {
+      // Vancouver summer: 14–24 °C, peaks ~3 pm
+      return 19 + 5 * Math.sin(2 * Math.PI * (h - 9) / 24)
+    }
+
+    function baseHum(h) {
+      // BC summer ambient: 55–71 %, inversely correlated with temp, stays under threshold
+      return 60 - 7 * Math.sin(2 * Math.PI * (h - 9) / 24)
+    }
+
+    // Pre-fill history buffer based on current Vancouver time
+    let tNoise = 0, hNoise = 0
+    const nowH = vanHours()
+    for (let i = HISTORY - 1; i >= 0; i--) {
+      const pastH = nowH - i / 3600
+      tNoise += (Math.random() - 0.5) * 0.12
+      tNoise  = Math.max(-1.2, Math.min(1.2, tNoise))
+      hNoise += (Math.random() - 0.5) * 0.25
+      hNoise  = Math.max(-3, Math.min(3, hNoise))
+      tempBuf.push(parseFloat((baseTemp(pastH) + tNoise).toFixed(1)))
+      humBuf.push(parseFloat((baseHum(pastH)  + hNoise).toFixed(1)))
+    }
+
+    function drawGraph() {
+      const canvas = document.getElementById('env-canvas')
+      if (!canvas) return
+      const ctx = canvas.getContext('2d')
+      const W = canvas.width, H = canvas.height
+      const PL = 6, PR = 6, PT = 8, PB = 6
+      const gW = W - PL - PR, gH = H - PT - PB
+
+      ctx.clearRect(0, 0, W, H)
+
+      const T_MIN = 10, T_MAX = 30
+      const H_MIN = 40, H_MAX = 85
+
+      const tx  = i => PL + (i / (HISTORY - 1)) * gW
+      const tyT = v => PT + gH - ((v - T_MIN) / (T_MAX - T_MIN)) * gH
+      const tyH = v => PT + gH - ((v - H_MIN) / (H_MAX - H_MIN)) * gH
+
+      // Faint grid
+      ctx.strokeStyle = 'rgba(0,0,0,0.07)'
+      ctx.lineWidth = 1
+      for (let r = 0; r <= 4; r++) {
+        const y = PT + (r / 4) * gH
+        ctx.beginPath(); ctx.moveTo(PL, y); ctx.lineTo(W - PR, y); ctx.stroke()
+      }
+
+      // Humidity warning threshold line
+      const warnY = tyH(HUM_WARN)
+      ctx.save()
+      ctx.strokeStyle = 'rgba(239,68,68,0.55)'
+      ctx.lineWidth = 1
+      ctx.setLineDash([4, 4])
+      ctx.beginPath(); ctx.moveTo(PL, warnY); ctx.lineTo(W - PR, warnY); ctx.stroke()
+      ctx.restore()
+
+      // Humidity fill
+      ctx.save()
+      ctx.beginPath()
+      humBuf.forEach((v, i) => { i === 0 ? ctx.moveTo(tx(i), tyH(v)) : ctx.lineTo(tx(i), tyH(v)) })
+      ctx.lineTo(tx(HISTORY - 1), PT + gH)
+      ctx.lineTo(PL, PT + gH)
+      ctx.closePath()
+      ctx.fillStyle = 'rgba(59,130,246,0.07)'
+      ctx.fill()
+      ctx.restore()
+
+      // Humidity line
+      ctx.strokeStyle = '#3b82f6'
+      ctx.lineWidth = 1.5
+      ctx.beginPath()
+      humBuf.forEach((v, i) => { i === 0 ? ctx.moveTo(tx(i), tyH(v)) : ctx.lineTo(tx(i), tyH(v)) })
+      ctx.stroke()
+
+      // Temp line
+      ctx.strokeStyle = '#f97316'
+      ctx.lineWidth = 1.5
+      ctx.beginPath()
+      tempBuf.forEach((v, i) => { i === 0 ? ctx.moveTo(tx(i), tyT(v)) : ctx.lineTo(tx(i), tyT(v)) })
+      ctx.stroke()
+
+      // End dots
+      const lastT = tempBuf[HISTORY - 1], lastH = humBuf[HISTORY - 1]
+      ctx.fillStyle = '#f97316'
+      ctx.beginPath(); ctx.arc(tx(HISTORY - 1), tyT(lastT), 3, 0, Math.PI * 2); ctx.fill()
+      ctx.fillStyle = '#3b82f6'
+      ctx.beginPath(); ctx.arc(tx(HISTORY - 1), tyH(lastH), 3, 0, Math.PI * 2); ctx.fill()
+    }
+
+    function envTick() {
+      const h = vanHours()
+      const lastT = tempBuf[tempBuf.length - 1]
+      const lastH = humBuf[humBuf.length - 1]
+
+      const newT = parseFloat((lastT + (baseTemp(h) - lastT) * 0.012 + (Math.random() - 0.5) * 0.14).toFixed(1))
+      const newH = parseFloat((lastH + (baseHum(h)  - lastH) * 0.012 + (Math.random() - 0.5) * 0.28).toFixed(1))
+
+      tempBuf.push(newT); if (tempBuf.length > HISTORY) tempBuf.shift()
+      humBuf.push(newH);  if (humBuf.length  > HISTORY) humBuf.shift()
+
+      const isHumid = newH >= HUM_WARN
+      const statusEl = document.getElementById('env-status-val')
+      const badgeEl  = document.getElementById('env-warn-badge')
+      if (statusEl) {
+        statusEl.textContent = isHumid ? 'HUMID' : 'DRY'
+        statusEl.style.color = isHumid ? '#ef4444' : '#16a34a'
+      }
+      if (badgeEl) {
+        badgeEl.textContent = 'ON'
+        badgeEl.className   = 'env-warn-badge' + (isHumid ? ' alert' : '')
+      }
+      const tEl = document.getElementById('env-temp-val')
+      const hEl = document.getElementById('env-hum-val')
+      if (tEl) tEl.textContent = newT.toFixed(1)
+      if (hEl) hEl.textContent = newH.toFixed(1)
+
+      drawGraph()
+    }
+
+    envTick()
+    setInterval(envTick, 1000)
   })()
   </script>
 </body>
