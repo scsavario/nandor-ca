@@ -7,24 +7,24 @@
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://nandor.ca/img/01.png</image:loc>
-      <image:title>1984 Frontier Class C motorhome - front three-quarter view</image:title>
-    </image:image>
-    <image:image>
-      <image:loc>https://nandor.ca/img/02.png</image:loc>
-      <image:title>1984 Frontier Class C motorhome - rear three-quarter view</image:title>
-    </image:image>
-    <image:image>
-      <image:loc>https://nandor.ca/img/03.png</image:loc>
-      <image:title>1984 Frontier Class C motorhome - rear view</image:title>
-    </image:image>
-    <image:image>
-      <image:loc>https://nandor.ca/img/04.png</image:loc>
+      <image:loc>https://nandor.ca/img/01.jpg</image:loc>
       <image:title>1984 Frontier Class C motorhome - front view</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://nandor.ca/img/05.png</image:loc>
+      <image:loc>https://nandor.ca/img/02.jpg</image:loc>
+      <image:title>1984 Frontier Class C motorhome - front three-quarter view</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://nandor.ca/img/03.jpg</image:loc>
       <image:title>1984 Frontier Class C motorhome - side profile</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://nandor.ca/img/04.jpg</image:loc>
+      <image:title>1984 Frontier Class C motorhome - rear three-quarter view</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://nandor.ca/img/05.jpg</image:loc>
+      <image:title>1984 Frontier Class C motorhome - rear view</image:title>
     </image:image>
   </url>
 </urlset>
